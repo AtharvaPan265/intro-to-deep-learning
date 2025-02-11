@@ -84,10 +84,10 @@ best_accuracy = 0
 #         best_k = k
 
 # print(f"Best K: {best_k} with accuracy: {best_accuracy}")
-best_k = 5
+best_k = 4
 # Use the best K to classify
 outputlabels = kNNClassify(x_test[0:test], x_train, y_train, best_k)
-result = y_test[0:test] - outputlabels
+result = np.subtract(y_test[0:test], outputlabels)
 result = (1 - np.count_nonzero(result)/len(outputlabels))
 print ("---classification accuracy for knn on mnist: %s ---" %result)
 print ("---execution time: %s seconds ---" % (time.time() - start_time))

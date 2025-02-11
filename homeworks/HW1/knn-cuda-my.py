@@ -79,7 +79,7 @@ best_accuracy = 0
 # print(f"Best K: {best_k} with accuracy: {best_accuracy}")
 
 
-best_k = 3
+k = 3
 start_time = time.time()
 outputlabels = kNNClassify(x_test, x_train, y_train, k)
 result = np.subtract(y_test, outputlabels)

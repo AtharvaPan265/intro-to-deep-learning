@@ -1,0 +1,3 @@
+[submodule "school/02_spring25/intro_to_deep_learning"]
+	path = school/02_spring25/intro_to_deep_learning
+	url = https://github.com/AtharvaPan265/intro-to-deep-learning.git

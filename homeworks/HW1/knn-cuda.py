@@ -1,20 +1,21 @@
 import math
-import numpy as np  
+import numpy as np
 from download_mnist import load
-import operator  
+import operator
 import time
 from numba import cuda
 
-# classify using kNN  
-#x_train = np.load('../x_train.npy')
-#y_train = np.load('../y_train.npy')
-#x_test = np.load('../x_test.npy')
-#y_test = np.load('../y_test.npy')
+# classify using kNN
+# x_train = np.load('../x_train.npy')
+# y_train = np.load('../y_train.npy')
+# x_test = np.load('../x_test.npy')
+# y_test = np.load('../y_test.npy')
 x_train, y_train, x_test, y_test = load()
-x_train = x_train.reshape(60000,28,28)
-x_test  = x_test.reshape(10000,28,28)
+x_train = x_train.reshape(60000, 28, 28)
+x_test = x_test.reshape(10000, 28, 28)
 x_train = x_train.astype(np.float32)
 x_test = x_test.astype(np.float32)
+
 
 @cuda.jit
 def calculate_distance(test_image, train_images, distances, n_train, image_size):
@@ -30,6 +31,7 @@ def calculate_distance(test_image, train_images, distances, n_train, image_size)
         # distances[idx] = (l1_dist + math.sqrt(l2_dist)) / 2
         distances[idx] = (math.sqrt(l2_dist)) / 2
 
+
 def kNNClassify(newInput, dataSet, labels, k):
     results = []
     n_test = len(newInput)
@@ -42,7 +44,7 @@ def kNNClassify(newInput, dataSet, labels, k):
 
     # Transfer training data to GPU once
     d_train_images = cuda.to_device(dataSet)
-    
+
     # Allocate memory for distances on device
     distances = np.zeros(n_train, dtype=np.float32)
     d_distances = cuda.to_device(distances)
@@ -50,24 +52,24 @@ def kNNClassify(newInput, dataSet, labels, k):
     for i in range(n_test):
         # Transfer current test image to GPU
         d_test_image = cuda.to_device(newInput[i])
-        
+
         # Calculate distances for each test image
         calculate_distance[blockspergrid, threadsperblock](
-            d_test_image, d_train_images, d_distances, n_train, image_size)
-        
+            d_test_image, d_train_images, d_distances, n_train, image_size
+        )
+
         # Copy distances back to host
         distances = d_distances.copy_to_host()
-        
+
         # Find k nearest neighbors
         k_nearest_indices = np.argsort(distances)[:k]
         k_nearest_labels = labels[k_nearest_indices]
-        
+
         # Get most common label
         predicted_label = np.bincount(k_nearest_labels).argmax()
         results.append(predicted_label)
-    
-    return np.array(results)
 
+    return np.array(results)
 
 
 start_time = time.time()
@@ -88,6 +90,6 @@ best_k = 4
 # Use the best K to classify
 outputlabels = kNNClassify(x_test[0:test], x_train, y_train, best_k)
 result = np.subtract(y_test[0:test], outputlabels)
-result = (1 - np.count_nonzero(result)/len(outputlabels))
-print ("---classification accuracy for knn on mnist: %s ---" %result)
-print ("---execution time: %s seconds ---" % (time.time() - start_time))
+result = 1 - np.count_nonzero(result) / len(outputlabels)
+print("---classification accuracy for knn on mnist: %s ---" % result)
+print("---execution time: %s seconds ---" % (time.time() - start_time))

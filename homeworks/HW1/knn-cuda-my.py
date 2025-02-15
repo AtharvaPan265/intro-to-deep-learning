@@ -14,7 +14,6 @@ x_train, y_train, x_test, y_test = load()
 x_train = x_train.reshape(60000, 28, 28).astype(np.float32)
 x_test = x_test.reshape(10000, 28, 28).astype(np.float32)
 
-
 @cuda.jit()  # this is the device funciton
 def calculate_l2_cuda(test_image, train_images, distances, n_train, image_size):
     idx = cuda.grid(1)
@@ -25,7 +24,6 @@ def calculate_l2_cuda(test_image, train_images, distances, n_train, image_size):
                 diff = test_image[i, j] - train_images[idx, i, j]
                 l2_dist += diff * diff
         distances[idx] = math.sqrt(l2_dist)
-
 
 def get_most_frequent(labels):
     values, counts = np.unique(labels, return_counts=True)

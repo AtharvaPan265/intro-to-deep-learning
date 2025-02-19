@@ -4,6 +4,8 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 from download_mnist import load
 
+num_epochs = 10
+
 x_train, y_train, x_test, y_test = load()
 
 X_train = torch.FloatTensor(x_train)
@@ -28,7 +30,6 @@ model = LinearClassifier()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.0001)
 
-num_epochs = 30
 for epoch in range(num_epochs):
     for batch_X, batch_y in train_loader:
         outputs = model(batch_X)
@@ -39,6 +40,7 @@ for epoch in range(num_epochs):
 
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
 model.eval()
+
 with torch.no_grad():
     test_outputs = model(X_test)
     _, predicted = torch.max(test_outputs.data, 1)

@@ -1,47 +1,62 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 from download_mnist import load
 
-num_epochs = 10
-sgd_lr = 0.0001
-
+# Load data
 x_train, y_train, x_test, y_test = load()
-
 X_train = torch.FloatTensor(x_train)
 y_train = torch.LongTensor(y_train)
 X_test = torch.FloatTensor(x_test)
 y_test = torch.LongTensor(y_test)
-
-train_dataset = TensorDataset(X_train, y_train)
-train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
 
 class LinearClassifier(nn.Module):
     def __init__(self):
         super(LinearClassifier, self).__init__()
         self.linear = nn.Linear(784, 10)
 
-    def forward(self, x):
+    def forward(self, x): 
         return self.linear(x)
 
 model = LinearClassifier()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr = sgd_lr)
 
-for epoch in range(num_epochs):
-    for batch_X, batch_y in train_loader:
-        outputs = model(batch_X)
-        loss = criterion(outputs, batch_y)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+def random_search(model, X_train, y_train, num_iterations):
+    # Initialize random weights
+    W = torch.randn_like(model.linear.weight) * 0.001
+    bestloss = float('inf')
+    
+    for i in range(num_iterations):
+        # Random search for update value
+        step_size = 0.0001
+        Wtry = W + torch.randn_like(W) * step_size
+        
+        # Update model with trial weights
+        with torch.no_grad():
+            model.linear.weight.data = Wtry
+            outputs = model(X_train)
+            loss = criterion(outputs, y_train)
+            
+        # Update weight if loss decreases
+        if loss < bestloss:
+            W = Wtry
+            bestloss = loss
+            print(f'iter {i} loss is {bestloss}')
+    
+    # Set final best weights
+    with torch.no_grad():
+        model.linear.weight.data = W
+    
+    return bestloss
 
-    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
+# Run random search
+num_iterations = 1000
+best_loss = random_search(model, X_train, y_train, num_iterations)
+
+# Evaluate the model
 model.eval()
-
 with torch.no_grad():
-    test_outputs = model(X_test)
-    _, predicted = torch.max(test_outputs.data, 1)
-    accuracy = (predicted == y_test).sum().item() / len(y_test)
-    print(f"Test Accuracy: {accuracy:.4f}")
+    outputs = model(X_test)
+    _, predicted = torch.max(outputs, 1)
+    accuracy = (predicted == y_test).sum().item() / y_test.size(0)
+    print(f'Test Accuracy: {accuracy * 100:.2f}%')

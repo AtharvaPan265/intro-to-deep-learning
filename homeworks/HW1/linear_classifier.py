@@ -24,7 +24,7 @@ y_test = torch.LongTensor(y_test)
 
 # Create dataset and dataloader
 train_dataset = TensorDataset(X_train, y_train)
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
 
 # Define the linear classifier
 class LinearClassifier(nn.Module):
@@ -46,10 +46,10 @@ model = LinearClassifier()
 # Define the loss function as Cross Entropy Loss, which is suitable for multi-class classification
 criterion = nn.CrossEntropyLoss()
 # Define the optimizer as Stochastic Gradient Descent (SGD) with a learning rate of 0.0001
-optimizer = optim.SGD(model.parameters(), lr=0.1)
+optimizer = optim.SGD(model.parameters(), lr=0.0001)
 
 # Training loop
-num_epochs = 15
+num_epochs = 30
 # Iterate over the number of epochs
 for epoch in range(num_epochs):
     # Iterate over the batches in the training data

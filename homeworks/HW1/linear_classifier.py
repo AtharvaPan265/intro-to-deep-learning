@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from download_mnist import load
 
 num_epochs = 10
+sgd_lr = 0.0001
 
 x_train, y_train, x_test, y_test = load()
 
@@ -16,7 +17,6 @@ y_test = torch.LongTensor(y_test)
 train_dataset = TensorDataset(X_train, y_train)
 train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
 
-
 class LinearClassifier(nn.Module):
     def __init__(self):
         super(LinearClassifier, self).__init__()
@@ -25,10 +25,9 @@ class LinearClassifier(nn.Module):
     def forward(self, x):
         return self.linear(x)
 
-
 model = LinearClassifier()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.0001)
+optimizer = optim.SGD(model.parameters(), lr = sgd_lr)
 
 for epoch in range(num_epochs):
     for batch_X, batch_y in train_loader:

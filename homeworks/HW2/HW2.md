@@ -2,6 +2,8 @@
 Use back-propagation to calculate the gradients of $$f(W,x)=||\sigma(Wx)||^2$$
 with respect to x and W. Here, $∥\cdot∥^2$ is the calculation of L2 loss, $W$ is a $3×3$ matrix, and $x$ is a $3 × 1$ vector, and $\sigma(\cdot)$ is the ReLU function that performs element-wise operation.
 
+We can first write out $W$ and $x$
+
 $$
 W = 
 \begin{bmatrix}
@@ -27,20 +29,23 @@ z_{3}
 $$
 so to do $a=\sigma(z)$
 $$
-a = \begin{bmatrix}
+a = 
+\begin{bmatrix}
 max(0,z_1)\\
 max(0,z_2)\\
 max(0,z_3)
-\end{bmatrix} = \begin{bmatrix}
+\end{bmatrix} =
+\begin{bmatrix}
 a_{1}\\
 a_{2}\\
 a_{3}
-\end{bmatrix}$$
+\end{bmatrix}  =
+\begin{cases} z_i & z_i > 0 \\ 0 & z_i \leq 0 \end{cases} $$
 
-$$a =\begin{cases} z_i & z_i > 0 \\ 0 & z_i \leq 0 \end{cases} $$
+
 Now we are left with $$f(W,x)=||a||^2$$
 then Gradient with respect to $\mathbf{a}$ 
-$$\dfrac{\partial f}{\partial a_i} = \dfrac{\partial }{\partial a}(a_1^2 + a_2^2 + a_3^2) = 2a_i = 
+$$\dfrac{\partial f}{\partial a} = \dfrac{\partial }{\partial a}(a_1^2 + a_2^2 + a_3^2) = 2a = 
 \begin{bmatrix}
 2a_{1}\\
 2a_{2}\\
@@ -63,6 +68,10 @@ we know can find the $\dfrac{\partial{z}}{\partial{x}}$ which is :
 $$\dfrac{\partial{z_k}}{\partial{x_i}}=W_{k,i}$$
 
 so
-$$\nabla_xf = \dfrac{\partial{f}}{\partial{x}}=\sum_j\dfrac{\partial{f}}{\partial{z_j}}\dfrac{\partial{z_j}}{\partial{x_i}}=\sum_j2z_i\cdot I_{(z_i>0)} W_{j,i}=W^T\cdot \nabla_zf$$
+$$\nabla_xf = 
+\dfrac{\partial{f}}{\partial{x}}=
+\sum_j\dfrac{\partial{f}}{\partial{z_j}}\dfrac{\partial{z_j}}{\partial{x_i}}=
+\sum_j2z_i\cdot I_{(z_i>0)} W_{j,i} =
+\nabla_zf \cdot W^T$$
 on the other hand $\nabla_Wf$ is much easier to find
 $$\nabla_Wf = \nabla_zf \cdot x^T$$  

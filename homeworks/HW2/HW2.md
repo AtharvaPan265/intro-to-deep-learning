@@ -75,3 +75,30 @@ $$\nabla_xf =
 \nabla_zf \cdot W^T$$
 on the other hand $\nabla_Wf$ is much easier to find
 $$\nabla_Wf = \nabla_zf \cdot x^T$$  
+$$\nabla_xf = 2a \cdot I_{(z_i>0)} \cdot \sum_{j=1}^3 W_{i,j} $$
+
+
+
+
+--- 
+
+# Backprop
+
+
+$$f(W,x,b) = CrossEntropy(SoftMax(Wx+b))$$
+need to find $\nabla_Wf$ $\nabla_bF$
+
+$z = Wx+b$
+$s = softmax(z)$
+$\mathcal{L} = crossentropy(s,y$)
+- where $y$ is the ground truth
+$k$ = number of output classes
+$$\dfrac{\partial s_i}{\partial z_k} = \dfrac{\partial}{\partial{z_k}}(\dfrac{e^{s_i}}{\sum_je^{s_j}}) = s_i(\delta_{ik} - s_k)$$
+$$\dfrac{\mathcal{\partial {L}}}{\partial{s_i}} = \dfrac{\partial}{\partial{s_i}}(-\sum_iy_i\log{(s_i)})= -\dfrac{y_i}{s_i}$$
+$$\dfrac{\partial{\mathcal{L}}}{\partial{z_k}} = \dfrac{\partial{\mathcal{L}}}{\partial{s_i}} \dfrac{\partial s_i}{\partial z_k} = -\dfrac{y_i}{s_i} s_i(\delta_{ik} - s_k) = s_k-y_k$$
+$$\dfrac{\partial{\mathcal{L}}}{\partial{z}} = s - y$$
+$$\dfrac{\partial z}{\partial W} = x^T$$
+$$\dfrac{\partial z}{\partial b} = \delta = I$$
+$$\dfrac{\partial{\mathcal{L}}}{\partial{W}} = (s-y) x^T$$
+$$\dfrac{\partial{\mathcal{L}}}{\partial{b}} = (s-y) $$
+

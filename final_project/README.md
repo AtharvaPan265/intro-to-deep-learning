@@ -72,16 +72,16 @@ $$g_t=\tanh({W_{x_g}x_t}+{W_{h_g}h_{t-1}}+{b_g})$$
 - $\nabla_{W_{h_g}}{g_t}=\nabla_pg_t \nabla_vp \nabla_{W_{h_g}}v = h_{t-1}^T\nabla_pg_t$
 - $\nabla_{b_g}g_t = \nabla_pg_t \nabla_{b_g}p = \nabla_pg_t$
 #### Cell State Update
-1. Element-wise multiplication of forget and prev cell state
+1. Element-wise multiplication of forget and prev cell state    
    $$f_t \odot c_{t-1}$$
-2. Element-wise multiplication of input gate and gate gate
+2. Element-wise multiplication of input gate and gate gate    
    $$i_t \odot g_t$$
-3. sum them
+3. sum them    
    $$c_t = {f_t \odot c_{t-1}}+{i_t \odot g_t}$$
 
 #### Hidden State Update
-1. apply $\tanh$ to cell state
+1. apply $\tanh$ to cell state    
    $$\tanh(c_t)$$
-2. Element-wise multiplication with output state
+2. Element-wise multiplication with output state    
    $$h_t =o_t \odot \tanh(c_t)$$
 

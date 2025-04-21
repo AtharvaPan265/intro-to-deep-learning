@@ -1,4 +1,6 @@
-#### Input Gate($i$)
+# LSTM Cell
+## Input Gate($i$)
+
 $$i_t = \sigma(W_{x_i}x_t+W_{h_i}h_{t-1}+b_i))$$
 - Partials
 	- $i_t = \sigma (p)$
@@ -17,7 +19,7 @@ $$i_t = \sigma(W_{x_i}x_t+W_{h_i}h_{t-1}+b_i))$$
 - $\nabla_{W_{h_i}}{i_t}=\nabla_pi_t \nabla_vp \nabla_{W_{h_i}}v = h_{t-1}^T\nabla_pi_t$
 - $\nabla_{b_i}i_t = \nabla_pi_t \nabla_{b_i}p = \nabla_pi_t$
 
-#### Forget gate($f$)
+## Forget gate($f$)
 $$f_t=\sigma({W_{x_f}x_t}+{W_{h_f}h_{t-1}}+{b_f})$$
 - Partials
 	- $f_t = \sigma (p)$
@@ -35,7 +37,7 @@ $$f_t=\sigma({W_{x_f}x_t}+{W_{h_f}h_{t-1}}+{b_f})$$
 - $\nabla_{W_{x_f}}{f_t}=\nabla_pf_t \nabla_qp \nabla_{W_{x_f}}q = x_t^T\nabla_pf_t$
 - $\nabla_{W_{h_f}}{f_t}=\nabla_pf_t \nabla_vp \nabla_{W_{h_f}}v = h_{t-1}^T\nabla_pf_t$
 - $\nabla_{b_f}f_t = \nabla_pf_t \nabla_{b_f}p = \nabla_pf_t$
-#### Output gate($o$)
+## Output gate($o$)
 $$o_t=\sigma({W_{x_o}x_t}+{W_{h_o}h_{t-1}}+{b_o})$$
 - Partials
 	- $o_t = \sigma (p)$
@@ -53,7 +55,7 @@ $$o_t=\sigma({W_{x_o}x_t}+{W_{h_o}h_{t-1}}+{b_o})$$
 - $\nabla_{W_{x_o}}{o_t}=\nabla_po_t \nabla_qp \nabla_{W_{x_o}}q = x_t^T\nabla_po_t$
 - $\nabla_{W_{h_o}}{o_t}=\nabla_po_t \nabla_vp \nabla_{W_{h_o}}v = h_{t-1}^T\nabla_po_t$
 - $\nabla_{b_o}o_t = \nabla_po_t \nabla_{b_o}p = \nabla_po_t$
-#### Gate gate($g$)
+## Gate gate($g$)
 $$g_t=\tanh({W_{x_g}x_t}+{W_{h_g}h_{t-1}}+{b_g})$$
 - Partials
 	- $g_t = \sigma (p)$
@@ -71,9 +73,31 @@ $$g_t=\tanh({W_{x_g}x_t}+{W_{h_g}h_{t-1}}+{b_g})$$
 - $\nabla_{W_{x_g}}{g_t}=\nabla_pg_t \nabla_qp \nabla_{W_{x_g}}q = x_t^T\nabla_pg_t$
 - $\nabla_{W_{h_g}}{g_t}=\nabla_pg_t \nabla_vp \nabla_{W_{h_g}}v = h_{t-1}^T\nabla_pg_t$
 - $\nabla_{b_g}g_t = \nabla_pg_t \nabla_{b_g}p = \nabla_pg_t$
-#### Cell State Update
+## Cell State Update($c_t$)
 $$c_t = {f_t \odot c_{t-1}}+{i_t \odot g_t}$$
+- Partials
+	- $c_t = q + p$
+		- $\nabla_qc_t=1$
+		- $\nabla_pc_t=1$
+	- $q = f_t \odot c_{t-1}$
+		- $\nabla_{f_t}q=c_{t-1}$
+		- $\nabla_{c_{t-1}}q=f_t$
+	- $p = i_t \odot g_t$
+		- $\nabla_{i_t}p=g_t$
+		- $\nabla_{g_t}p=i_t$
+- $\nabla_{f_t}c_t=\nabla_qc_t\nabla_{f_t}q=c_{t-1}$
+- $\nabla_{i_t}c_t= \nabla_{p}c_t\nabla_{i_t}p=g_t$
+- $\nabla_{g_t}c_t= \nabla_{p}c_t\nabla_{g_t}p=i_t$
 
-#### Hidden State Update
+## Hidden State Update($h_t$)
 $$h_t =o_t \odot \tanh(c_t)$$
+
+- Partials
+	- $h_t = o_t \odot q$
+		- $\nabla_{o_t}h_t=q$
+		- $\nabla_{q}h_t=o_t$
+	- $q=\tanh(c_t)$
+		- $\nabla_{c_t}q=1-\tanh^2(c_t)$
+- $\nabla_{o_t}h_t=q$
+- $\nabla_{c_t}h_t=\nabla_{q}h_t\nabla_{c_t}q=o_t\nabla_{c_t}q$
 

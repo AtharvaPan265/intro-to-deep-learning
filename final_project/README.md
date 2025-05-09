@@ -1,89 +1,117 @@
 # LSTM Cell
 
-$\begin{array}{ll} \\
+$$\begin{array}{ll} \\
 i_t = \sigma(W_{x_i} x_t + b_{x_i} + W_{h_i} h_{t-1} + b_{h_i}) \\
 f_t = \sigma(W_{x_f} x_t + b_{x_f} + W_{h_f} h_{t-1} + b_{h_f}) \\
 g_t = \tanh(W_{x_g} x_t + b_{x_g} + W_{h_g} h_{t-1} + b_{h_g}) \\
 o_t = \sigma(W_{x_o} x_t + b_{x_o} + W_{h_o} h_{t-1} + b_{h_o}) \\
 c_t = f_t \odot c_{t-1} + i_t \odot g_t \\
 h_t = o_t \odot \tanh(c_t) \\
-\end{array}$
+\end{array}$$
 
 ## Deriving Gradients
 ### Input Gate($i_t$)
 
-$$i_t = \sigma(W_{x_i}x_t+W_{h_i}h_{t-1}+b_i)$$
+$$i_t = \sigma(W_{x_i} x_t + b_{x_i} + W_{h_i} h_{t-1} + b_{h_i})$$
 - Partials
 	- $i_t = \sigma (p)$
-		- $\nabla_pi_t=(1-\sigma(p))\sigma(p)$
-	- $p = q + v + b_i$
+		- $\nabla_p{i_t}=(1-\sigma(p))\sigma(p)$
+	- $p = q + v$
 		- $\nabla_qp=1$
 		- $\nabla_vp=1$
-		- $\nabla_{b_i}p=1$
-	- $q = W_{x_i}x_t$
-		- $\nabla_{W_{x_i}}q = x_t^T$
-		- $\nabla_{x_t}q = W_{x_i}^T$
-	- $v = W_{h_i}h_{t-1}$
-		- $\nabla_{W_{h_i}}q = h_{t-1}^T$
-		- $\nabla_{h_{t-1}}q = W_{h_i}^T$
-- $\nabla_{W_{x_i}}{i_t}=\nabla_pi_t \nabla_qp \nabla_{W_{x_i}}q = x_t^T\nabla_pi_t$
-- $\nabla_{W_{h_i}}{i_t}=\nabla_pi_t \nabla_vp \nabla_{W_{h_i}}v = h_{t-1}^T\nabla_pi_t$
-- $\nabla_{b_i}i_t = \nabla_pi_t \nabla_{b_i}p = \nabla_pi_t$
+	- $q = W_{x_i} x_t + b_{x_i}$
+		- $\nabla_{W_{x_i}}q = x_t$
+		- $\nabla_{x_t}q = W_{x_i}$
+		-  $\nabla_{b_{x_i}}q = 1$
+	- $p = W_{h_i} h_{t-1} + b_{h_i}$
+		- $\nabla_{W_{h_i}}q = h_{t-1}$
+		- $\nabla_{h_{t-1}}q = W_{h_i}$
+		-  $\nabla_{b_{h_i}}q = 1$
+- Final Gradients
+	- $\nabla_{W_{x_i}}{i_t} = \nabla_p{i_t}\nabla_qp\nabla_{W_{x_i}}q = \nabla_p{i_t} x_t$
+	- $\nabla_{x_t}{i_t} = \nabla_p{i_t}\nabla_qp\nabla_{x_t}q =\nabla_p{i_t} {W_{x_i}}$
+	- $\nabla_{b_{x_i}}{i_t} = \nabla_p{i_t}\nabla_qp\nabla_{b_{x_i}}q=\nabla_p{i_t}$
+
+	- $\nabla_{W_{h_i}}{i_t} = \nabla_p{i_t}\nabla_qp\nabla_{W_{h_i}}q = \nabla_p{i_t} h_{t-1}$
+	- $\nabla_{h_{t-1}}{i_t} =  \nabla_p{i_t}\nabla_qp\nabla_{h_{t-1}}q =\nabla_p{i_t} W_{h_i}$
+	- $\nabla_{b_{h_i}}{i_t} = \nabla_p{i_t}\nabla_qp\nabla_{b_{h_i}}q=\nabla_p{i_t}$
 
 ### Forget gate($f_t$)
-$$f_t=\sigma({W_{x_f}x_t}+{W_{h_f}h_{t-1}}+{b_f})$$
+
+$$f_t = \sigma(W_{x_f} x_t + b_{x_f} + W_{h_f} h_{t-1} + b_{h_f})$$
 - Partials
 	- $f_t = \sigma (p)$
-		- $\nabla_pf_t=(1-\sigma(p))\sigma(p)$
-	- $p = q + v + b_f$
+		- $\nabla_p{f_t}=(1-\sigma(p))\sigma(p)$
+	- $p = q + v$
 		- $\nabla_qp=1$
 		- $\nabla_vp=1$
-		- $\nabla_{b_f}p=1$
-	- $q = W_{x_f}x_t$
-		- $\nabla_{W_{x_f}}q = x_t^T$
-		- $\nabla_{x_t}q = W_{x_f}^T$
-	- $v = W_{h_f}h_{t-1}$
-		- $\nabla_{W_{h_f}}q = h_{t-1}^T$
-		- $\nabla_{h_{t-1}}q = W_{h_f}^T$
-- $\nabla_{W_{x_f}}{f_t}=\nabla_pf_t \nabla_qp \nabla_{W_{x_f}}q = x_t^T\nabla_pf_t$
-- $\nabla_{W_{h_f}}{f_t}=\nabla_pf_t \nabla_vp \nabla_{W_{h_f}}v = h_{t-1}^T\nabla_pf_t$
-- $\nabla_{b_f}f_t = \nabla_pf_t \nabla_{b_f}p = \nabla_pf_t$
+	- $q = W_{x_f} x_t + b_{x_f}$
+		- $\nabla_{W_{x_f}}q = x_t$
+		- $\nabla_{x_t}q = W_{x_f}$
+		-  $\nabla_{b_{x_f}}q = 1$
+	- $p = W_{h_f} h_{t-1} + b_{h_f}$
+		- $\nabla_{W_{h_f}}q = h_{t-1}$
+		- $\nabla_{h_{t-1}}q = W_{h_f}$
+		-  $\nabla_{b_{h_f}}q = 1$
+- Final Gradients
+	- $\nabla_{W_{x_f}}{f_t} = \nabla_p{f_t}\nabla_qp\nabla_{W_{x_f}}q = \nabla_p{f_t} x_t$
+	- $\nabla_{x_t}{f_t} = \nabla_p{f_t}\nabla_qp\nabla_{x_t}q =\nabla_p{f_t} {W_{x_f}}$
+	- $\nabla_{b_{x_f}}{f_t} = \nabla_p{f_t}\nabla_qp\nabla_{b_{x_f}}q=\nabla_p{f_t}$
+
+	- $\nabla_{W_{h_f}}{f_t} = \nabla_p{f_t}\nabla_qp\nabla_{W_{h_f}}q = \nabla_p{f_t} h_{t-1}$
+	- $\nabla_{h_{t-1}}{f_t} =  \nabla_p{f_t}\nabla_qp\nabla_{h_{t-1}}q =\nabla_p{i_t} W_{h_f}$
+	- $\nabla_{b_{h_f}}{f_t} = \nabla_p{f_t}\nabla_qp\nabla_{b_{h_f}}q=\nabla_p{f_t}$
+
 ### Output gate($o_t$)
-$$o_t=\sigma({W_{x_o}x_t}+{W_{h_o}h_{t-1}}+{b_o})$$
+$$o_t = \sigma(W_{x_o} x_t + b_{x_o} + W_{h_o} h_{t-1} + b_{h_o})$$
 - Partials
 	- $o_t = \sigma (p)$
-		- $\nabla_po_t=(1-\sigma(p))\sigma(p)$
-	- $p = q + v + b_o$
+		- $\nabla_p{o_t}=(1-\sigma(p))\sigma(p)$
+	- $p = q + v$
 		- $\nabla_qp=1$
 		- $\nabla_vp=1$
-		- $\nabla_{b_o}p=1$
-	- $q = W_{x_o}x_t$
-		- $\nabla_{W_{x_o}}q = x_t^T$
-		- $\nabla_{x_t}q = W_{x_o}^T$
-	- $v = W_{h_o}h_{t-1}$
-		- $\nabla_{W_{h_o}}q = h_{t-1}^T$
-		- $\nabla_{h_{t-1}}q = W_{h_o}^T$
-- $\nabla_{W_{x_o}}{o_t}=\nabla_po_t \nabla_qp \nabla_{W_{x_o}}q = x_t^T\nabla_po_t$
-- $\nabla_{W_{h_o}}{o_t}=\nabla_po_t \nabla_vp \nabla_{W_{h_o}}v = h_{t-1}^T\nabla_po_t$
-- $\nabla_{b_o}o_t = \nabla_po_t \nabla_{b_o}p = \nabla_po_t$
+	- $q = W_{x_o} x_t + b_{x_o}$
+		- $\nabla_{W_{x_o}}q = x_t$
+		- $\nabla_{x_t}q = W_{x_o}$
+		-  $\nabla_{b_{x_o}}q = 1$
+	- $p = W_{h_o} h_{t-1} + b_{h_o}$
+		- $\nabla_{W_{h_o}}q = h_{t-1}$
+		- $\nabla_{h_{t-1}}q = W_{h_o}$
+		-  $\nabla_{b_{h_o}}q = 1$
+- Final Gradients
+	- $\nabla_{W_{x_o}}{o_t} = \nabla_p{o_t}\nabla_qp\nabla_{W_{x_o}}q = \nabla_p{o_t} x_t$
+	- $\nabla_{x_t}{o_t} = \nabla_p{o_t}\nabla_qp\nabla_{x_t}q =\nabla_p{o_t} {W_{x_o}}$
+	- $\nabla_{b_{x_o}}{o_t} = \nabla_p{o_t}\nabla_qp\nabla_{b_{x_o}}q=\nabla_p{o_t}$
+
+	- $\nabla_{W_{h_o}}{o_t} = \nabla_p{o_t}\nabla_qp\nabla_{W_{h_o}}q = \nabla_p{o_t} h_{t-1}$
+	- $\nabla_{h_{t-1}}{o_t} =  \nabla_p{o_t}\nabla_qp\nabla_{h_{t-1}}q =\nabla_p{i_t} W_{h_o}$
+	- $\nabla_{b_{h_o}}{o_t} = \nabla_p{o_t}\nabla_qp\nabla_{b_{h_o}}q=\nabla_p{o_t}$
+
 ### Candidate gate($g_t$)
-$$g_t=\tanh({W_{x_g}x_t}+{W_{h_g}h_{t-1}}+{b_g})$$
+$$g_t = \tanh(W_{x_g} x_t + b_{x_g} + W_{h_g} h_{t-1} + b_{h_g})$$
 - Partials
-	- $g_t = \sigma (p)$
-		- $\nabla_pg_t=1-\tanh^2(p)$
-	- $p = q + v + b_g$
+	- $g_t = \tanh (p)$
+		- $\nabla_p{g_t}=(1-\tanh(p))\tanh(p)$
+	- $p = q + v$
 		- $\nabla_qp=1$
 		- $\nabla_vp=1$
-		- $\nabla_{b_g}p=1$
-	- $q = W_{x_g}x_t$
-		- $\nabla_{W_{x_g}}q = x_t^T$
-		- $\nabla_{x_t}q = W_{x_g}^T$
-	- $v = W_{h_g}h_{t-1}$
-		- $\nabla_{W_{h_g}}q = h_{t-1}^T$
-		- $\nabla_{h_{t-1}}q = W_{h_g}^T$
-- $\nabla_{W_{x_g}}{g_t}=\nabla_pg_t \nabla_qp \nabla_{W_{x_g}}q = x_t^T\nabla_pg_t$
-- $\nabla_{W_{h_g}}{g_t}=\nabla_pg_t \nabla_vp \nabla_{W_{h_g}}v = h_{t-1}^T\nabla_pg_t$
-- $\nabla_{b_g}g_t = \nabla_pg_t \nabla_{b_g}p = \nabla_pg_t$
+	- $q = W_{x_g} x_t + b_{x_g}$
+		- $\nabla_{W_{x_g}}q = x_t$
+		- $\nabla_{x_t}q = W_{x_g}$
+		-  $\nabla_{b_{x_g}}q = 1$
+	- $p = W_{h_g} h_{t-1} + b_{h_g}$
+		- $\nabla_{W_{h_g}}q = h_{t-1}$
+		- $\nabla_{h_{t-1}}q = W_{h_g}$
+		-  $\nabla_{b_{h_g}}q = 1$
+- Final Gradients
+	- $\nabla_{W_{x_g}}{g_t} = \nabla_p{g_t}\nabla_qp\nabla_{W_{x_g}}q = \nabla_p{g_t} x_t$
+	- $\nabla_{x_t}{g_t} = \nabla_p{g_t}\nabla_qp\nabla_{x_t}q =\nabla_p{g_t} {W_{x_g}}$
+	- $\nabla_{b_{x_g}}{g_t} = \nabla_p{g_t}\nabla_qp\nabla_{b_{x_g}}q=\nabla_p{g_t}$
+
+	- $\nabla_{W_{h_g}}{g_t} = \nabla_p{g_t}\nabla_qp\nabla_{W_{h_g}}q = \nabla_p{g_t} h_{t-1}$
+	- $\nabla_{h_{t-1}}{g_t} =  \nabla_p{g_t}\nabla_qp\nabla_{h_{t-1}}q =\nabla_p{i_t} W_{h_g}$
+	- $\nabla_{b_{h_g}}{g_t} = \nabla_p{g_t}\nabla_qp\nabla_{b_{h_g}}q=\nabla_p{g_t}$
+
 ### Cell State Update($c_t$)
 $$c_t = {f_t \odot c_{t-1}}+{i_t \odot g_t}$$
 - Partials
@@ -96,9 +124,10 @@ $$c_t = {f_t \odot c_{t-1}}+{i_t \odot g_t}$$
 	- $p = i_t \odot g_t$
 		- $\nabla_{i_t}p=g_t$
 		- $\nabla_{g_t}p=i_t$
-- $\nabla_{f_t}c_t=\nabla_qc_t\nabla_{f_t}q=c_{t-1}$
-- $\nabla_{i_t}c_t= \nabla_{p}c_t\nabla_{i_t}p=g_t$
-- $\nabla_{g_t}c_t= \nabla_{p}c_t\nabla_{g_t}p=i_t$
+- Final Gradients
+	- $\nabla_{f_t}c_t=\nabla_qc_t\nabla_{f_t}q=c_{t-1}$
+	- $\nabla_{i_t}c_t= \nabla_{p}c_t\nabla_{i_t}p=g_t$
+	- $\nabla_{g_t}c_t= \nabla_{p}c_t\nabla_{g_t}p=i_t$
 
 ### Hidden State Update($h_t$)
 $$h_t =o_t \odot \tanh(c_t)$$
@@ -109,36 +138,10 @@ $$h_t =o_t \odot \tanh(c_t)$$
 		- $\nabla_{q}h_t=o_t$
 	- $q=\tanh(c_t)$
 		- $\nabla_{c_t}q=1-\tanh^2(c_t)$
-- $\nabla_{o_t}h_t=q$
-- $\nabla_{c_t}h_t=\nabla_{q}h_t\nabla_{c_t}q=o_t\nabla_{c_t}q$
-
-
-## All Gradients
-
-- $i_t$
-	- $\nabla_{W_{x_i}}{i_t}=\nabla_pi_t \nabla_qp \nabla_{W_{x_i}}q = x_t^T\nabla_pi_t$
-	- $\nabla_{W_{h_i}}{i_t}=\nabla_pi_t \nabla_vp \nabla_{W_{h_i}}v = h_{t-1}^T\nabla_pi_t$
-	- $\nabla_{b_i}i_t = \nabla_pi_t \nabla_{b_i}p = \nabla_pi_t$
-- $f_t$
-	- $\nabla_{W_{x_f}}{f_t}=\nabla_pf_t \nabla_qp \nabla_{W_{x_f}}q = x_t^T\nabla_pf_t$
-	- $\nabla_{W_{h_f}}{f_t}=\nabla_pf_t \nabla_vp \nabla_{W_{h_f}}v = h_{t-1}^T\nabla_pf_t$
-	- $\nabla_{b_f}f_t = \nabla_pf_t \nabla_{b_f}p = \nabla_pf_t$
-- $o_t$
-	- $\nabla_{W_{x_o}}{o_t}=\nabla_po_t \nabla_qp \nabla_{W_{x_o}}q = x_t^T\nabla_po_t$
-	- $\nabla_{W_{h_o}}{o_t}=\nabla_po_t \nabla_vp \nabla_{W_{h_o}}v = h_{t-1}^T\nabla_po_t$
-	- $\nabla_{b_o}o_t = \nabla_po_t \nabla_{b_o}p = \nabla_po_t$
-- $g_t$
-	- $\nabla_{W_{x_g}}{g_t}=\nabla_pg_t \nabla_qp \nabla_{W_{x_g}}q = x_t^T\nabla_pg_t$
-	- $\nabla_{W_{h_g}}{g_t}=\nabla_pg_t \nabla_vp \nabla_{W_{h_g}}v = h_{t-1}^T\nabla_pg_t$
-	- $\nabla_{b_g}g_t = \nabla_pg_t \nabla_{b_g}p = \nabla_pg_t$
-- $c_t$
-	- $\nabla_{f_t}c_t=\nabla_qc_t\nabla_{f_t}q=c_{t-1}$
-	- $\nabla_{i_t}c_t= \nabla_{p}c_t\nabla_{i_t}p=g_t$
-	- $\nabla_{g_t}c_t= \nabla_{p}c_t\nabla_{g_t}p=i_t$
-
-- $h_t$
+- Final Gradients
 	- $\nabla_{o_t}h_t=q$
 	- $\nabla_{c_t}h_t=\nabla_{q}h_t\nabla_{c_t}q=o_t\nabla_{c_t}q$
+
 
 ## Backpropagation
 
